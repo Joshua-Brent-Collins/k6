@@ -150,5 +150,18 @@ func TestEncodingAlgorithms(t *testing.T) {
 			}`)
 			assert.NoError(t, err)
 		})
+		t.Run("StringToBytesConversion", func(t *testing.T) {
+			_, err := common.RunString(rt, `
+			var testString = "testString!";
+			var correct = [116,101,115,116,83,116,114,105,110,103,33];
+			var bytes = encoding.stringtobytes(testString);
+			Object.keys(bytes).forEach(function(item) {
+				if (bytes[item] !== correct[item]) {
+					throw new Error("Conversion mismatch: " + bytes[item] + " vs " + correct[item]);
+				}
+			});
+			`)
+			assert.NoError(t, err)
+		})
 	})
 }
