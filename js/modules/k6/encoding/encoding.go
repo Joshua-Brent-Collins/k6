@@ -76,3 +76,8 @@ func (e *Encoding) B64decode(ctx context.Context, input string, encoding string)
 
 	return string(output)
 }
+
+func (e *Encoding) Stringtobytes(ctx context.Context, input string) interface{} {
+	output := []byte(input)
+	return output
+}
