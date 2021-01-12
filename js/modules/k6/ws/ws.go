@@ -370,25 +370,12 @@ func (s *Socket) SendBinary(message []byte) {
 }
 
 func (s *Socket) SendHex(message string) {
-	rt := common.GetRuntime(s.ctx)
+	hexData, err := hex.DecodeString(message)
 
-	hexData, hexErr := hex.DecodeString(message)
-
-	if hexErr != nil {
-		common.Throw(common.GetRuntime(s.ctx), hexErr)
+	if err != nil {
+		common.Throw(common.GetRuntime(s.ctx), err)
 	}
-
-	writeData := []byte(hexData)
-	if err := s.conn.WriteMessage(websocket.BinaryMessage, writeData); err != nil {
-		s.handleEvent("error", rt.ToValue(err))
-	}
-
-	stats.PushIfNotDone(s.ctx, s.samplesOutput, stats.Sample{
-		Metric: metrics.WSMessagesSent,
-		Time:   time.Now(),
-		Tags:   s.sampleTags,
-		Value:  1,
-	})
+	s.SendBinary(hexData)
 }
 
 func (s *Socket) Ping() {
