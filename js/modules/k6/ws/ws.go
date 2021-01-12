@@ -352,6 +352,22 @@ func (s *Socket) Send(message string) {
 	})
 }
 
+func (s *Socket) SendBinary(message []byte) {
+	rt := common.GetRuntime(s.ctx)
+
+	writeData := []byte(message)
+	if err := s.conn.WriteMessage(websocket.BinaryMessage, writeData); err != nil {
+		s.handleEvent("error", rt.ToValue(err))
+	}
+
+	stats.PushIfNotDone(s.ctx, s.samplesOutput, stats.Sample{
+		Metric: metrics.WSMessagesSent,
+		Time:   time.Now(),
+		Tags:   s.sampleTags,
+		Value:  1,
+	})
+}
+
 func (s *Socket) Ping() {
 	rt := common.GetRuntime(s.ctx)
 	deadline := time.Now().Add(writeWait)
